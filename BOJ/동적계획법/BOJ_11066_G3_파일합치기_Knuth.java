@@ -30,17 +30,18 @@ public class BOJ_11066_G3_파일합치기_Knuth {
 				sum[i] = sum[i-1] + files[i];
 			}
 			
-			for(int i = 1; i <= K; i++) {
-				kn[i][i] = i;
+			for(int i = 1; i < K; i++) {
+                dp[i][i+1] = sum[i+1] - sum[i-1];
+				kn[i][i+1] = i;
 			}
 			
-			for(int i = 1; i <= K; i++) {	// 1장 ~ K장 까지 묶음
+			for(int i = 2; i < K; i++) {	// 1장 ~ K장 까지 묶음
 				for(int from = 1; from+i <= K; from++) {	// from
 					int to = from+i;
 					dp[from][to] = Integer.MAX_VALUE;
 					for(int div = kn[from][to-1]; div <= kn[from+1][to]; div++) {		// 두 덩이로 나눌 기준점 idx
 						int v = dp[from][div] + dp[div+1][to] + (sum[to] - sum[from-1]);
-						if(dp[from][to] > v) {
+						if(dp[from][to] >= v) {
 							dp[from][to] = v;
 							kn[from][to] = div;
 						}
