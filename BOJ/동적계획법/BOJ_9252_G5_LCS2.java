@@ -3,54 +3,58 @@ package 동적계획법;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Stack;
 
 public class BOJ_9252_G5_LCS2 {
+	static int dp[][];
+	static String str1, str2;
 
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		String str1 = br.readLine();
-		String str2 = br.readLine();
+		str1 = br.readLine();
+		str2 = br.readLine();
 		int len1 = str1.length(); int len2 = str2.length();
-		LCS dp[][] = new LCS[len1+1][len2+1];
-		for(int i = 0; i <= str1.length(); i++) {
-			dp[i][0] = new LCS(0, "");
-		}
-		for(int i = 0; i <= str2.length(); i++) {
-			dp[0][i] = new LCS(0, "");
-		}
+		dp = new int[len1+1][len2+1];
+		// --- 입력 End ---
+		
 		for(int i = 0; i < str1.length(); i++) {
 			for(int j = 0; j < str2.length(); j++) {
 				if(str1.charAt(i) == str2.charAt(j)) {
-					LCS prev = dp[i][j];
-					dp[i+1][j+1] = new LCS(prev.len+1, prev.lcs + str2.charAt(j));
+					// 글자가 같다면 len 및 문자열 저장
+					dp[i+1][j+1] = dp[i][j] + 1;
 				}
 				else {
-					LCS prev = dp[i+1][j].len > dp[i][j+1].len ? dp[i+1][j] : dp[i][j+1]; 
-					dp[i+1][j+1] = prev;
+					dp[i+1][j+1] = dp[i+1][j] > dp[i][j+1] ? dp[i+1][j] : dp[i][j+1]; 
 				}
 			}
 		}
-		/*
-		for(int i = 1; i <= len1; i++) {
-			for(int j = 1; j <= len2; j++) {
-				System.out.print(dp[i][j].len + " ");
-			}
-			System.out.println();
-		}
-		*/
+		System.out.println(dp[len1][len2]);
 		
-		System.out.println(dp[len1][len2].len);
-		System.out.println(dp[len1][len2].lcs);
+		System.out.println(findLCS(len1, len2));
 	}
 	
-	static class LCS {
-		int len;
-		String lcs;
+	private static String findLCS(int r, int c) {
+		String ansStr = "";
+		Stack<Character> stack = new Stack<>();
 		
-		public LCS(int len, String lcs) {
-			this.len = len;
-			this.lcs = lcs;
+		while(r > 0 && c > 0) {
+			if(dp[r][c] == dp[r-1][c]) {
+				--r;
+			}
+			else if(dp[r][c] == dp[r][c-1]) {
+				--c;
+			}
+			else {
+				stack.add(str1.charAt(r-1));
+				--r;
+				--c;
+			}
 		}
+		
+		while(!stack.isEmpty()) {
+			ansStr += stack.pop();
+		}
+		return ansStr;
 	}
 
 }
