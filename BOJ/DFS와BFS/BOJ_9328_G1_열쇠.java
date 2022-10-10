@@ -14,6 +14,7 @@ public class BOJ_9328_G1_열쇠 {
 	static ArrayList<Door> doorList;
 	static char map[][];
 	static boolean visited[][];
+	static boolean key_update;
 	static Queue<Point> q;
 	static int dr[] = {-1, 1, 0, 0};
 	static int dc[] = {0, 0, -1, 1};
@@ -32,10 +33,15 @@ public class BOJ_9328_G1_열쇠 {
 			spList = new ArrayList<>();
 			doorList = new ArrayList<>();
 			ans = 0;
+			key_bitset = 0;
+			
 			for(int i = 0; i < h; i++) {
 				String line = br.readLine();
 				for(int j = 0; j < w; j++) {
 					map[i][j] = line.charAt(j);
+					if('A' <= map[i][j] && map[i][j] <= 'Z') {
+						doorList.add(new Door(i, j, map[i][j] - 'A'));
+					}
 					if(i == 0 || j == 0 || i == h-1 || j == w-1) {
 						if(map[i][j] == '$') {
 							// 가장자리가 $인 경우 바로 ++ans
@@ -47,15 +53,20 @@ public class BOJ_9328_G1_열쇠 {
 							// 시작점이 될 수 있는 지점
 							spList.add(new Point(i, j));
 						}
-						if('A' <= map[i][j] && map[i][j] <= 'Z') {
-							doorList.add(new Door(i, j, map[i][j] - 'A'));
+						else if('A' <= map[i][j] && map[i][j] <= 'Z') {
+							spList.add(new Point(i,j));
+						}
+						else if('a' <= map[i][j] && map[i][j] <= 'z') {
+							int num = map[i][j] - 'a';
+							key_bitset |= (1 << num);
+							map[i][j] = '.';
+							spList.add(new Point(i, j));
 						}
 					}
 				}
 			}
 			// bitset에 열쇠 추가
 			String key = br.readLine();
-			key_bitset = 0;
 			if(key != "0") {
 				for(int i = 0; i < key.length(); i++) {
 					int num = key.charAt(i) - 'a';
@@ -63,18 +74,32 @@ public class BOJ_9328_G1_열쇠 {
 				}
 			}
 			// 문들 중 시작점이 될 수 있는 경우 추가
-			for(int i = 0; i < doorList.size(); i++) {
+			/*for(int i = 0; i < doorList.size(); i++) {
 				Door door = doorList.get(i);
 				if(door.r == 0 || door.c == 0 || door.r == h-1 || door.c == w-1) {
 					if((key_bitset & (1 << door.num)) != 0) {
 						spList.add(new Point(door.r, door.c));
 					}
 				}
+			}*/
+			key_update = true;
+			// key를 획득한 상태가 달라진 경우 spList 다시 순회
+			while(key_update) {
+				key_update = false;
+				visited = new boolean[h][w];
+				// 시작점부터 bfs 실행
+				for(int i = 0; i < spList.size(); i++) {
+					Point sp = spList.get(i);
+					if('A' <= map[sp.r][sp.c] && map[sp.r][sp.c] <= 'Z') {
+						int num = map[sp.r][sp.c] - 'a';
+						if((key_bitset & (1 << num)) == 0) {
+							continue;
+						}
+					}
+					bfs(sp);
+				}
 			}
-			// 시작점부터 bfs 실행
-			for(int i = 0; i < spList.size(); i++) {
-				bfs(spList.get(i));
-			}
+			
 			sb.append(ans + "\n");
 		}
 		System.out.print(sb.toString());
@@ -102,23 +127,24 @@ public class BOJ_9328_G1_열쇠 {
 					else if('A' <= c && c <= 'Z') {
 						// 문을 만난 경우
 						int door = c - 'A';
-						if((key_bitset & (1 << door)) == 0) {
-							// 해당 열쇠가 없는 경우
-							doorList.add(new Door(nr, nc, door));
+						if((key_bitset & (1 << door)) != 0) {
+							// 해당 열쇠가 있는 경우
+							map[nr][nc] = '.';
+						}
+						else {
 							continue;
 						}
 					}
 					else {
 						// 열쇠를 만난 경우
 						// 비트셋에 열쇠를 추가하고 기존에 못들어간 문을 확인
+						key_update = true;
 						int key = c - 'a';
 						key_bitset |= (1 << key);
 						for(int i = 0; i < doorList.size(); i++) {
 							Door door = doorList.get(i);
 							if(key == door.num) {
 								map[door.r][door.c] = '.'; 
-								q.add(new Point(door.r, door.c));
-								visited[door.r][door.c] = true;
 							}
 						}
 					}
