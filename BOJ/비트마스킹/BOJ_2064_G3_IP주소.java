@@ -45,7 +45,7 @@ public class BOJ_2064_G3_IP주소 {
 		
 		String na = "";
 		String nm = "";
-		
+		// 100000000 - 1 = 11111111
 		for(int i = 0; i < 4; i++) {
 			int check = (1 << 8) - 1;
 			

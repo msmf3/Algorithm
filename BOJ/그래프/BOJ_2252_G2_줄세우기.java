@@ -49,5 +49,4 @@ public class BOJ_2252_G2_줄세우기 {
 		}
 		System.out.println(sb.toString());
 	}
-
 }

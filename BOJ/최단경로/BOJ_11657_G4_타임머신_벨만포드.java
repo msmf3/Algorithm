@@ -65,6 +65,7 @@ public class BOJ_11657_G4_타임머신_벨만포드 {
 		
 		// (N-1) 번 동안 최단거리(dist배열) 초기화 진행
 		for(int i = 1; i < N; i++) {
+			update = false;
 			for(int j = 1; j <= N; j++) {
 				// 도달할 수 없는 곳은 넘김
 				if(dist[j] == INF) continue;

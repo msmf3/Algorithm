@@ -1,4 +1,4 @@
-package 수학;
+package 기본;
 
 import java.io.BufferedReader;
 import java.io.IOException;

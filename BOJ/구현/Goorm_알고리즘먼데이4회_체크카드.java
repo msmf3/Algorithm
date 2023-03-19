@@ -39,7 +39,7 @@ public class Goorm_알고리즘먼데이4회_체크카드 {
 				break;
 				
 			case "reservation":
-				if(balance < amount) {
+				if(!resv_queue.isEmpty() || balance < amount) {
 					resv_queue.add(amount);
 				}
 				else {

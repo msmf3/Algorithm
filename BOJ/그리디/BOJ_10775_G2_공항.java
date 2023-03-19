@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/*
+ * Disjoint-Set 참고 : https://blog.naver.com/kks227/220791837179
+ */
+
 public class BOJ_10775_G2_공항 {
 	static int parents[];
 
